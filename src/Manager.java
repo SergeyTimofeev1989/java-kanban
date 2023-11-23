@@ -1,33 +1,30 @@
 import model.EpicTask;
 import model.SimpleTask;
-import model.SybTask;
+import model.SubTask;
 import model.Task;
 
 import java.util.*;
 
 public class Manager {
-    private static int idCount = 0;
     Scanner scanner = new Scanner(System.in);
-    private Task task;
-    HashMap<Integer, Task> packOfSimpleTasks = new HashMap<>();
-    HashMap<Integer, Task> packOfEpicTasks = new HashMap<>();
-    HashMap<Integer, Task> packOfSubTasks = new HashMap<>();
+    private Task simpleTask;
+    private EpicTask epicTask;
+    private SubTask subTasks;
+
+    HashMap<Integer, SimpleTask> packOfSimpleTasks = new HashMap<>();
+    HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
+    HashMap<Integer, SubTask> packOfSubTasks = new HashMap<>();
 
 
-    public Manager() {
-        task = new Task();
-    }
-
-
-    public HashMap<Integer, Task> getPackOfSimpleTasks() {
+    public HashMap<Integer, SimpleTask> getPackOfSimpleTasks() {
         return packOfSimpleTasks;
     }
 
-    public HashMap<Integer, Task> getPackOfEpicTasks() {
+    public HashMap<Integer, EpicTask> getPackOfEpicTasks() {
         return packOfEpicTasks;
     }
 
-    public HashMap<Integer, Task> getPackOfSubTasks() {
+    public HashMap<Integer, SubTask> getPackOfSubTasks() {
         return packOfSubTasks;
     }
 
@@ -38,10 +35,12 @@ public class Manager {
 
     public void clearEpicTasks() {
         packOfEpicTasks.clear();
+        packOfSubTasks.clear();
     }
 
     public void clearSubTasks() {
         packOfSubTasks.clear();
+        changeStatus();
     }
 
 
@@ -58,57 +57,74 @@ public class Manager {
     }
 
     public Task getSubTaskById() {
+        SubTask taskForReturn = null;
         System.out.println("Введите id задачи:");
         int id = scanner.nextInt();
-        return packOfSubTasks.getOrDefault(id, null);
+        for (Map.Entry<Integer, EpicTask> epicTask : packOfEpicTasks.entrySet()) {
+            for (Map.Entry<Integer, Task> subTask : epicTask.getValue().getSubTasks().entrySet()) {
+                if (subTask.getKey() == id) {
+                    taskForReturn = (SubTask) subTask.getValue();
+                }
+            }
+        }
+        return taskForReturn;
     }
 
 
     public void createSimpleTask() {
-        idCount++;
-        task = new Task();
+        int id = Task.getIdCount();
+        simpleTask = new SimpleTask();
         System.out.println("Введите имя задачи:");
-        task.setName(scanner.nextLine());
+        simpleTask.setName(scanner.nextLine());
         System.out.println("Введите описание задачи:");
-        task.setDescription(scanner.nextLine());
+        simpleTask.setDescription(scanner.nextLine());
         System.out.println("Введите статус задачи:");
-        task.setStatus(scanner.nextLine());
-        packOfSimpleTasks.put(idCount, task);
+        simpleTask.setStatus(scanner.nextLine());
+        packOfSimpleTasks.put(id, (SimpleTask) simpleTask);
         System.out.println("Задача создана и помещена в список.\n");
+        changeStatus();
     }
 
     public void createEpicTask() {
-        idCount++;
-        task = new Task();
+        int id = Task.getIdCount();
+        epicTask = new EpicTask();
         System.out.println("Введите имя задачи:");
-        task.setName(scanner.nextLine());
+        epicTask.setName(scanner.nextLine());
         System.out.println("Введите описание задачи:");
-        task.setDescription(scanner.nextLine());
-        System.out.println("Введите статус задачи:");
-        task.setStatus(scanner.nextLine());
-        packOfEpicTasks.put(idCount, task);
+        epicTask.setDescription(scanner.nextLine());
+        epicTask.setStatus("NEW");
+        packOfEpicTasks.put(id, epicTask);
         System.out.println("Задача создана и помещена в список.\n");
     }
 
     public void createSubTask() {
-        idCount++;
-        task = new Task();
+        int id = Task.getIdCount();
+        subTasks = new SubTask();
         System.out.println("Введите имя задачи:");
-        task.setName(scanner.nextLine());
+        subTasks.setName(scanner.nextLine());
         System.out.println("Введите описание задачи:");
-        task.setDescription(scanner.nextLine());
+        subTasks.setDescription(scanner.nextLine());
         System.out.println("Введите статус задачи:");
-        task.setStatus(scanner.nextLine());
-        packOfSubTasks.put(idCount, task);
+        subTasks.setStatus(scanner.nextLine());
+        System.out.println("Ведите id эпик задачи, куда вы хотите добавить эту подзадачу:");
+        int idForSearch = scanner.nextInt();
+        scanner.nextLine();
+        for (Map.Entry<Integer, EpicTask> task : packOfEpicTasks.entrySet()) {
+            if (task.getKey() == idForSearch) {
+                task.getValue().getSubTasks().put(id, subTasks);
+            }
+        }
+        packOfSubTasks.put(id, subTasks);
         System.out.println("Задача создана и помещена в список.\n");
+        changeStatus();
     }
 
 
     public void updateSimpleTask() {
         System.out.println("Введите id");
         int id = scanner.nextInt();
-        task = new Task();
-        for(Map.Entry<Integer, Task> task : packOfSimpleTasks.entrySet()) {
+        simpleTask = new Task();
+        for (Map.Entry<Integer, SimpleTask> task : packOfSimpleTasks.entrySet()) {
             if (task.getKey() == id) {
                 System.out.println("Введите имя задачи:");
                 task.getValue().setName(scanner.nextLine());
@@ -116,7 +132,7 @@ public class Manager {
                 task.getValue().setDescription(scanner.nextLine());
                 System.out.println("Введите статус задачи:");
                 task.getValue().setStatus(scanner.nextLine());
-                packOfSubTasks.put(id, (Task) task);
+                packOfSubTasks.put(id, (SubTask) task);
                 System.out.println("Обычная задача обновлена.\n");
             }
         }
@@ -125,37 +141,36 @@ public class Manager {
     public void updateEpicTask() {
         System.out.println("Введите id");
         int id = scanner.nextInt();
-        task = new Task();
-        for(Map.Entry<Integer, Task> task : packOfEpicTasks.entrySet()) {
+        epicTask = new EpicTask();
+        for (Map.Entry<Integer, EpicTask> task : packOfEpicTasks.entrySet()) {
             if (task.getKey() == id) {
                 System.out.println("Введите имя задачи:");
                 task.getValue().setName(scanner.nextLine());
                 System.out.println("Введите описание задачи:");
                 task.getValue().setDescription(scanner.nextLine());
-                System.out.println("Введите статус задачи:");
-                task.getValue().setStatus(scanner.nextLine());
-                packOfSubTasks.put(id, (Task) task);
+                packOfSubTasks.put(id, (SubTask) task);
                 System.out.println("Обычная задача обновлена.\n");
             }
         }
+        changeStatus();
     }
 
     public void updateSubTask() {
-        System.out.println("Введите id");
+        subTasks = new SubTask();
+        System.out.println("Введите имя задачи:");
+        subTasks.setName(scanner.nextLine());
+        System.out.println("Введите описание задачи:");
+        subTasks.setDescription(scanner.nextLine());
+        System.out.println("Введите статус задачи:");
+        subTasks.setStatus(scanner.nextLine());
+        System.out.println("Ведите id эпик задачи, где вы хотите обновить эту подзадачу:");
         int id = scanner.nextInt();
-        task = new Task();
-        for(Map.Entry<Integer, Task> task : packOfSubTasks.entrySet()) {
+        for (Map.Entry<Integer, EpicTask> task : packOfEpicTasks.entrySet()) {
             if (task.getKey() == id) {
-                System.out.println("Введите имя задачи:");
-                task.getValue().setName(scanner.nextLine());
-                System.out.println("Введите описание задачи:");
-                task.getValue().setDescription(scanner.nextLine());
-                System.out.println("Введите статус задачи:");
-                task.getValue().setStatus(scanner.nextLine());
-                packOfSubTasks.put(id, (Task) task);
-                System.out.println("Обычная задача обновлена.\n");
+                task.getValue().getSubTasks().put(id, subTasks);
             }
         }
+        changeStatus();
     }
 
 
@@ -170,6 +185,9 @@ public class Manager {
         System.out.println("Введите id");
         int id = scanner.nextInt();
         packOfEpicTasks.remove(id);
+        for (Map.Entry<Integer, EpicTask> t : packOfEpicTasks.entrySet()) {
+            t.getValue().getSubTasks().clear();
+        }
         System.out.println("Обычная задача удалена");
     }
 
@@ -178,5 +196,41 @@ public class Manager {
         int id = scanner.nextInt();
         packOfSubTasks.remove(id);
         System.out.println("Обычная задача удалена");
+        changeStatus();
+    }
+
+    public Map<Integer, Task> getTasksForEpicTask() {
+        Map<Integer, Task> mapForReturn = null;
+        System.out.println("Введите id эпика");
+        int id = scanner.nextInt();
+        for (Map.Entry<Integer, EpicTask> epicTask : packOfEpicTasks.entrySet()) {
+            if (epicTask.getKey() == id) {
+                mapForReturn = epicTask.getValue().getSubTasks();
+            }
+        }
+        return mapForReturn;
+    }
+
+
+    public void changeStatus() {
+        epicTask.setStatus("IN_PROGRESS");
+        boolean statusNew = true;
+        boolean statusDone = true;
+        for (Map.Entry<Integer, EpicTask> epicTaskInLoop : packOfEpicTasks.entrySet()) {
+            for (Task subTask : epicTaskInLoop.getValue().getSubTasks().values()) {
+                if (!subTask.getStatus().equals("NEW")) {
+                    statusNew = false;
+                }
+                else if (!subTask.getStatus().equals("DONE")) {
+                    statusDone = false;
+                }
+            }
+            if (statusNew || epicTaskInLoop.getValue().getSubTasks().size() == 0) {
+                epicTaskInLoop.getValue().setStatus("NEW");
+            }
+            if (statusDone) {
+                epicTaskInLoop.getValue().setStatus("DONE");
+            }
+        }
     }
 }

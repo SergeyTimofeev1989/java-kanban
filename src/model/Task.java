@@ -1,9 +1,22 @@
 package model;
 
+import java.util.HashMap;
+
 public class Task {
     private String name;
     private String description;
     private String status;
+    private static int idCount = 0;
+
+    private HashMap<Integer, Task> subTasks = new HashMap<>();
+
+    public HashMap<Integer, Task> getSubTasks() {
+        return subTasks;
+    }
+
+    public static int getIdCount() {
+        return ++idCount;
+    }
 
     public String getName() {
         return name;
@@ -31,6 +44,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Задача: " + name + ", описание задачи: " + description + ", id = " + id + ", статус: " + status + "\n";
+        return "Задача: " + name + ", описание задачи: " + description + ", статус: " + status + "\n";
     }
 }

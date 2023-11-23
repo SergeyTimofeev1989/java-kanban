@@ -1,3 +1,5 @@
+import model.Task;
+
 import javax.xml.stream.events.Comment;
 import java.util.Scanner;
 
@@ -23,11 +25,11 @@ public class Main {
             } else if (command == 6) {
                 manager.clearSubTasks();
             } else if (command == 7) {
-                manager.getSimpleTaskById();
+                System.out.println(manager.getSimpleTaskById());
             } else if (command == 8) {
-                manager.getEpicTaskById();
+                System.out.println(manager.getEpicTaskById());
             } else if (command == 9) {
-                manager.getSubTaskById();
+                System.out.println(manager.getSubTaskById());
             } else if (command == 10) {
                 manager.createSimpleTask();
             } else if (command == 11) {
@@ -47,7 +49,7 @@ public class Main {
             } else if (command == 18) {
                 manager.deleteSubTaskById();
             } else if (command == 19) {
-                manager.
+                System.out.println(manager.getTasksForEpicTask());
             }
         }
     }
