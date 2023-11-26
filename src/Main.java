@@ -1,6 +1,3 @@
-import model.Task;
-
-import javax.xml.stream.events.Comment;
 import java.util.Scanner;
 
 public class Main {
@@ -8,22 +5,21 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         Manager manager = new Manager();
 
-
         while (true) {
             printMenu();
             int command = scanner.nextInt();
             if (command == 1) {
                 System.out.println(manager.getPackOfSimpleTasks());
-            } else if  (command == 2) {
+            } else if (command == 2) {
                 System.out.println(manager.getPackOfEpicTasks());
             } else if (command == 3) {
                 System.out.println(manager.getPackOfSubTasks());
             } else if (command == 4) {
-                manager.clearSimpleTasks();
-            } else if(command == 5) {
-                manager.clearEpicTasks();
+                manager.clearAllSimpleTasks();
+            } else if (command == 5) {
+                manager.clearAllEpicTasks();
             } else if (command == 6) {
-                manager.clearSubTasks();
+                manager.clearAllSubTasks();
             } else if (command == 7) {
                 System.out.println(manager.getSimpleTaskById());
             } else if (command == 8) {
@@ -49,7 +45,11 @@ public class Main {
             } else if (command == 18) {
                 manager.deleteSubTaskById();
             } else if (command == 19) {
-                System.out.println(manager.getTasksForEpicTask());
+                System.out.println(manager.getAllSubTasksFromEpicTask());
+            } else if (command == 20) {
+                return;
+            } else {
+                System.out.println("Нет такой команды.");
             }
         }
     }
@@ -75,6 +75,6 @@ public class Main {
         System.out.println("17. Удалить эпическую задачу по id.");
         System.out.println("18. Удалить подзадачу по id.");
         System.out.println("19. Получить список всех подзадач определённого эпика.");
-        System.out.println("0. Выйти\n");
+        System.out.println("20. Выйти\n");
     }
 }

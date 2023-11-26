@@ -1,4 +1,3 @@
 package model;
 
-public class SimpleTask extends Task{
-}
+public class SimpleTask extends Task{}
