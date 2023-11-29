@@ -4,6 +4,9 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Manager manager = new Manager();
+        SimpleTask simpleTask = new SimpleTask("Сходить в магазин", "Хлеб, молоко, сыр", "NEW");
+        EpicTask epicTask = new EpicTask("Приготовить пиццу", "С грибами и помидорами");
+        SubTask subTask = new SubTask("Сходить в магазин", "Хлеб, молоко, сыр, грибы, мука, помидоры", "NEW");
 
         while (true) {
             printMenu();
@@ -21,29 +24,29 @@ public class Main {
             } else if (command == 6) {
                 manager.clearAllSubTasks();
             } else if (command == 7) {
-                System.out.println(manager.getSimpleTaskById());
+                System.out.println(manager.getSimpleTaskById(simpleTask.id));
             } else if (command == 8) {
-                System.out.println(manager.getEpicTaskById());
+                System.out.println(manager.getEpicTaskById(epicTask.id));
             } else if (command == 9) {
-                System.out.println(manager.getSubTaskById());
+                System.out.println(manager.getSubTaskById(subTask.epicId));
             } else if (command == 10) {
-                manager.createSimpleTask();
+                manager.createSimpleTask(simpleTask);
             } else if (command == 11) {
-                manager.createEpicTask();
+                manager.createEpicTask(epicTask);
             } else if (command == 12) {
-                manager.createSubTask();
+                manager.createSubTask(subTask);
             } else if (command == 13) {
-                manager.updateSimpleTask();
+                manager.updateSimpleTask(simpleTask);
             } else if (command == 14) {
-                manager.updateEpicTask();
+                manager.updateEpicTask(epicTask);
             } else if (command == 15) {
-                manager.updateSubTask();
+                manager.updateSubTask(subTask);
             } else if (command == 16) {
-                manager.deleteSimpleTaskById();
+                manager.deleteSimpleTaskById(1);
             } else if (command == 17) {
-                manager.deleteEpicTaskById();
+                manager.deleteEpicTaskById(2);
             } else if (command == 18) {
-                manager.deleteSubTaskById();
+                manager.deleteSubTaskById(3);
             } else if (command == 19) {
                 System.out.println(manager.getAllSubTasksFromEpicTask());
             } else if (command == 20) {
