@@ -1,3 +1,10 @@
+package com.yandex.kanban;
+
+import com.yandex.kanban.model.EpicTask;
+import com.yandex.kanban.model.SimpleTask;
+import com.yandex.kanban.model.SubTask;
+import com.yandex.kanban.service.Manager;
+
 import java.util.Scanner;
 
 public class Main {
@@ -24,11 +31,11 @@ public class Main {
             } else if (command == 6) {
                 manager.clearAllSubTasks();
             } else if (command == 7) {
-                System.out.println(manager.getSimpleTaskById(simpleTask.id));
+                System.out.println(manager.getSimpleTaskById(1));
             } else if (command == 8) {
-                System.out.println(manager.getEpicTaskById(epicTask.id));
+                System.out.println(manager.getEpicTaskById(2));
             } else if (command == 9) {
-                System.out.println(manager.getSubTaskById(subTask.epicId));
+                System.out.println(manager.getSubTaskById(3));
             } else if (command == 10) {
                 manager.createSimpleTask(simpleTask);
             } else if (command == 11) {
@@ -48,7 +55,7 @@ public class Main {
             } else if (command == 18) {
                 manager.deleteSubTaskById(3);
             } else if (command == 19) {
-                System.out.println(manager.getAllSubTasksFromEpicTask());
+                System.out.println(manager.getEpicSubtasks(1));
             } else if (command == 20) {
                 return;
             } else {
