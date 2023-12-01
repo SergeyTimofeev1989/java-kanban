@@ -35,11 +35,15 @@ public class Manager {
 
     public void clearAllEpicTasks() {
         packOfEpicTasks.clear();
+        packOfSubtasks.clear();
     }
 
     public void clearAllSubTasks() {
-        packOfEpicTasks.clear();
         packOfSubtasks.clear();
+        for (EpicTask epic : packOfEpicTasks.values()) {
+            epic.getSubtaskIds().clear();
+            changeStatus(epic);
+        }
     }
 
 
@@ -72,7 +76,6 @@ public class Manager {
     public int createSubTask(SubTask subTask) {
         subTask.setId(id++);
         packOfSubtasks.put(subTask.getId(), subTask);
-        subTask.getEpicTask().getSubTasks().add(subTask);
         subTask.getEpicTask().getSubtaskIds().add(subTask.getId());
         changeStatus(subTask.getEpicTask());
         return subTask.getId();
@@ -103,21 +106,24 @@ public class Manager {
 
     public void deleteEpicTaskById(int idOfEpicTask) {
         packOfEpicTasks.get(idOfEpicTask).getSubtaskIds().clear();
-        packOfEpicTasks.get(idOfEpicTask).getSubTasks().clear();
         packOfEpicTasks.remove(idOfEpicTask);
     }
 
     public void deleteSubTaskById(int idOfSubtask) {
         EpicTask epicTask = packOfSubtasks.get(idOfSubtask).getEpicTask();
         epicTask.getSubtaskIds().remove(idOfSubtask);
-        epicTask.getSubTasks().remove(idOfSubtask);
         packOfSubtasks.remove(idOfSubtask);
+        changeStatus(epicTask);
     }
 
 
     public ArrayList<SubTask> getEpicSubtasks(int epicId) {
+        ArrayList<SubTask> listForReturn = new ArrayList<>();
         EpicTask epicTask = packOfEpicTasks.get(epicId);
-        return epicTask.getSubTasks();
+        for (Integer id : epicTask.getSubtaskIds()) {
+            listForReturn.add(packOfSubtasks.get(id));
+        }
+        return listForReturn;
     }
 
     public void changeStatus(EpicTask task) {
