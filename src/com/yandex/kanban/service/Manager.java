@@ -7,14 +7,13 @@ import com.yandex.kanban.model.SubTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class Manager {
+    protected int id = 1;
     protected final HashMap<Integer, SimpleTask> packOfSimpleTasks = new HashMap<>();
     protected final HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
     protected final HashMap<Integer, SubTask> packOfSubtasks = new HashMap<>();
-    protected int NextId = 1;
 
 
     public ArrayList<SimpleTask> getPackOfSimpleTasks() {
@@ -58,24 +57,24 @@ public class Manager {
 
 
     public int createSimpleTask(SimpleTask simpleTask) {
-        simpleTask.setId(NextId++);
+        simpleTask.setId(id++);
         packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
         return simpleTask.getId();
     }
 
     public int createEpicTask(EpicTask epicTask) {
-        epicTask.setId(NextId++);
+        epicTask.setId(id++);
         changeStatus(epicTask);
         packOfEpicTasks.put(epicTask.getId(), epicTask);
         return epicTask.getId();
     }
 
     public int createSubTask(SubTask subTask) {
-        subTask.setId(NextId++);
-        changeStatus(packOfEpicTasks.get(subTask.getId()));
+        subTask.setId(id++);
         packOfSubtasks.put(subTask.getId(), subTask);
         subTask.getEpicTask().getSubTasks().add(subTask);
         subTask.getEpicTask().getSubtaskIds().add(subTask.getId());
+        changeStatus(subTask.getEpicTask());
         return subTask.getId();
     }
 
@@ -93,6 +92,7 @@ public class Manager {
     public int updateSubTask(SubTask subTask) {
         packOfSubtasks.put(subTask.getId(), subTask);
         EpicTask epicTask = packOfEpicTasks.get(subTask.getId());
+        changeStatus(epicTask);
         return subTask.getId();
     }
 
@@ -103,6 +103,7 @@ public class Manager {
 
     public void deleteEpicTaskById(int idOfEpicTask) {
         packOfEpicTasks.get(idOfEpicTask).getSubtaskIds().clear();
+        packOfEpicTasks.get(idOfEpicTask).getSubTasks().clear();
         packOfEpicTasks.remove(idOfEpicTask);
     }
 

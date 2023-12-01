@@ -7,7 +7,7 @@ public class Task {
     protected String name;
     protected String description;
     protected String status;
-    protected ArrayList<Integer> tasks;
+
 
     public Task(String name, String description, String status) {
         this.name = name;
