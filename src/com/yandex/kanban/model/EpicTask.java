@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class EpicTask extends Task {
     private ArrayList<Integer> subtaskIds;
 
-    public EpicTask(String name, String description) {
-        super(name, description, "");
+    public EpicTask(String name, String description, Enum status) {
+        super(name, description, status);
         subtaskIds = new ArrayList<>();
     }
 
@@ -14,4 +14,15 @@ public class EpicTask extends Task {
         return subtaskIds;
     }
 
+    @Override
+    public String toString() {
+        return "\n10" +
+                "EpicTask{" +
+                "subtaskIds=" + subtaskIds +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

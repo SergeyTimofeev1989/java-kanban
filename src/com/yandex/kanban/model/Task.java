@@ -6,20 +6,20 @@ public class Task {
     protected int id;
     protected String name;
     protected String description;
-    protected String status;
+    protected Enum status;
 
 
-    public Task(String name, String description, String status) {
+    public Task(String name, String description, Enum status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Enum status) {
         this.status = status;
     }
 
-    public String getStatus() {
+    public Enum getStatus() {
         return status;
     }
 
@@ -30,4 +30,5 @@ public class Task {
     public int getId() {
         return id;
     }
+
 }
