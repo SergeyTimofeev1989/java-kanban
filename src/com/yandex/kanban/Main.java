@@ -4,8 +4,8 @@ import com.yandex.kanban.model.EpicTask;
 import com.yandex.kanban.model.SimpleTask;
 import com.yandex.kanban.model.Status;
 import com.yandex.kanban.model.SubTask;
-import com.yandex.kanban.service.HistoryManager;
 import com.yandex.kanban.service.InMemoryHistoryManager;
+import com.yandex.kanban.service.InMemoryTaskManager;
 
 
 import java.util.Scanner;
@@ -14,53 +14,54 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
         SimpleTask simpleTask = new SimpleTask("Сходить в магазин", "Хлеб, молоко, сыр", Status.NEW);
         EpicTask epicTask = new EpicTask("Приготовить пиццу", "С грибами и помидорами", Status.NEW);
         SubTask subTask = new SubTask("Сходить в магазин", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW,epicTask);
-        SubTask subTaskTwo = new SubTask("тест", "тест", Status.NEW);
-        SubTask subTaskThree = new SubTask("Сходить в кино", "Билеты", Status.NEW);
+        SubTask subTaskTwo = new SubTask("тест", "тест", Status.NEW,epicTask);
+        SubTask subTaskThree = new SubTask("Сходить в кино", "Билеты", Status.NEW,epicTask);
 
         while (true) {
             printMenu();
             int command = scanner.nextInt();
             if (command == 1) {
-                System.out.println(inMemoryHistoryManager.getPackOfSimpleTasks());
+                System.out.println(inMemoryTaskManager.getPackOfSimpleTasks());
             } else if (command == 2) {
-                System.out.println(inMemoryHistoryManager.getPackOfEpicTasks());
+                System.out.println(inMemoryTaskManager.getPackOfEpicTasks());
             } else if (command == 3) {
-                System.out.println(inMemoryHistoryManager.getPackOfSubTasks());
+                System.out.println(inMemoryTaskManager.getPackOfSubTasks());
             } else if (command == 4) {
-                inMemoryHistoryManager.clearAllSimpleTasks();
+                inMemoryTaskManager.clearAllSimpleTasks();
             } else if (command == 5) {
-                inMemoryHistoryManager.clearAllEpicTasks();
+                inMemoryTaskManager.clearAllEpicTasks();
             } else if (command == 6) {
-                inMemoryHistoryManager.clearAllSubTasks();
+                inMemoryTaskManager.clearAllSubTasks();
             } else if (command == 7) {
-                System.out.println(inMemoryHistoryManager.getSimpleTaskById(1));
+                System.out.println(inMemoryTaskManager.getSimpleTaskById(1));
             } else if (command == 8) {
-                System.out.println(inMemoryHistoryManager.getEpicTaskById(2));
+                System.out.println(inMemoryTaskManager.getEpicTaskById(2));
             } else if (command == 9) {
-                System.out.println(inMemoryHistoryManager.getSubTaskById(3));
+                System.out.println(inMemoryTaskManager.getSubTaskById(3));
             } else if (command == 10) {
-                inMemoryHistoryManager.createSimpleTask(simpleTask);
+                inMemoryTaskManager.createSimpleTask(simpleTask);
             } else if (command == 11) {
-                inMemoryHistoryManager.createEpicTask(epicTask);
+                inMemoryTaskManager.createEpicTask(epicTask);
             } else if (command == 12) {
-                inMemoryHistoryManager.createSubTask(subTask);
+                inMemoryTaskManager.createSubTask(subTask);
             } else if (command == 13) {
-                inMemoryHistoryManager.updateSimpleTask(simpleTask);
+                inMemoryTaskManager.updateSimpleTask(simpleTask);
             } else if (command == 14) {
-                inMemoryHistoryManager.updateEpicTask(epicTask);
+                inMemoryTaskManager.updateEpicTask(epicTask);
             } else if (command == 15) {
-                inMemoryHistoryManager.updateSubTask(subTask);
+                inMemoryTaskManager.updateSubTask(subTask);
             } else if (command == 16) {
-                inMemoryHistoryManager.deleteSimpleTaskById(1);
+                inMemoryTaskManager.deleteSimpleTaskById(1);
             } else if (command == 17) {
-                inMemoryHistoryManager.deleteEpicTaskById(2);
+                inMemoryTaskManager.deleteEpicTaskById(2);
             } else if (command == 18) {
-                inMemoryHistoryManager.deleteSubTaskById(3);
+                inMemoryTaskManager.deleteSubTaskById(3);
             } else if (command == 19) {
-                System.out.println(inMemoryHistoryManager.getEpicSubtasks(1));
+                System.out.println(inMemoryTaskManager.getEpicSubtasks(1));
             } else if (command == 20) {
                 inMemoryHistoryManager.getHistory();
             } else if (command == 21) {

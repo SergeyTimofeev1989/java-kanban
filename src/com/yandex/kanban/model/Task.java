@@ -30,5 +30,4 @@ public class Task {
     public int getId() {
         return id;
     }
-
 }

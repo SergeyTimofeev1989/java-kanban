@@ -54,5 +54,4 @@ public interface TaskManager {
 
     List<SubTask> getEpicSubtasks(int epicId);
 
-    void changeStatus(EpicTask task);
 }

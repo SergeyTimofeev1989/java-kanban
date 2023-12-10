@@ -1,8 +1,12 @@
 package com.yandex.kanban.service;
 
 public final class Managers {
-    private Managers(){};
-    private static TaskManager getDefaultHistory() {
+
+    private static HistoryManager getDefaultHistory() {
+        return new InMemoryHistoryManager();
+    }
+
+    public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
-  }
+}

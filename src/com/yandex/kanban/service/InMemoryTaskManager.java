@@ -5,7 +5,6 @@ import com.yandex.kanban.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -13,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, SimpleTask> packOfSimpleTasks = new HashMap<>();
     protected final HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
     protected final HashMap<Integer, SubTask> packOfSubtasks = new HashMap<>();
-    protected List<Task> viewedTask = new ArrayList<>();
+    private final HistoryManager historyManager = (HistoryManager) Managers.getDefault();
 
     @Override
     public ArrayList<SimpleTask> getPackOfSimpleTasks() {
@@ -52,36 +51,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SimpleTask getSimpleTaskById(int id) {
-        if (viewedTask.size() != 10) {
-            viewedTask.add(packOfSimpleTasks.get(id));
-        } else {
-            viewedTask.remove(0);
-            viewedTask.add(packOfSimpleTasks.get(id));
-        }
-        return packOfSimpleTasks.get(id);
-
+        final SimpleTask simpleTask = packOfSimpleTasks.get(id);
+        historyManager.add(simpleTask);
+        return simpleTask;
     }
 
     @Override
     public EpicTask getEpicTaskById(int id) {
-        if (viewedTask.size() != 10) {
-            viewedTask.add(packOfEpicTasks.get(id));
-        } else {
-            viewedTask.remove(0);
-            viewedTask.add(packOfEpicTasks.get(id));
-        }
-        return packOfEpicTasks.get(id);
+       final EpicTask epicTask = packOfEpicTasks.get(id);
+       historyManager.add(epicTask);
+       return epicTask;
     }
 
     @Override
     public SubTask getSubTaskById(int id) {
-        if (viewedTask.size() != 10) {
-            viewedTask.add(packOfSubtasks.get(id));
-        } else {
-            viewedTask.remove(0);
-            viewedTask.add(packOfSubtasks.get(id));
-        }
-        return packOfSubtasks.get(id);
+        final SubTask subTask = packOfSubtasks.get(id);
+        historyManager.add(subTask);
+        return subTask;
     }
 
     @Override
@@ -104,10 +90,6 @@ public class InMemoryTaskManager implements TaskManager {
         subTask.setId(id++);
         packOfSubtasks.put(subTask.getId(), subTask);
         subTask.getEpicTask().getSubtaskIds().add(subTask.getId());
-        /* на 109 строке исключение выходило, потому что в Main на 16 строке в конструктор класса я не добавлял epicTask
-        Я добавил epicTask. Теперь getEpicTask() не ссылается на null и у меня возник вопрос,
-        а нужен ли вообще в SubTask конструктор на 6й строке? Думаю его можно удалить.
-        */
         changeStatus(subTask.getEpicTask());
         return subTask.getId();
     }
@@ -161,7 +143,6 @@ public class InMemoryTaskManager implements TaskManager {
         return listForReturn;
     }
 
-    @Override
     public void changeStatus(EpicTask task) {
         int countOfNewStatus = 0;
         int countOfDoneStatus = 0;
