@@ -5,6 +5,7 @@ import com.yandex.kanban.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -13,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
     protected final HashMap<Integer, SubTask> packOfSubtasks = new HashMap<>();
     private final HistoryManager historyManager = (HistoryManager) Managers.getDefault();
-
+    
     @Override
     public ArrayList<SimpleTask> getPackOfSimpleTasks() {
         return new ArrayList<>(packOfSimpleTasks.values());
@@ -58,9 +59,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public EpicTask getEpicTaskById(int id) {
-       final EpicTask epicTask = packOfEpicTasks.get(id);
-       historyManager.add(epicTask);
-       return epicTask;
+        final EpicTask epicTask = packOfEpicTasks.get(id);
+        historyManager.add(epicTask);
+        return epicTask;
     }
 
     @Override
@@ -141,6 +142,11 @@ public class InMemoryTaskManager implements TaskManager {
             listForReturn.add(packOfSubtasks.get(id));
         }
         return listForReturn;
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
     }
 
     public void changeStatus(EpicTask task) {
