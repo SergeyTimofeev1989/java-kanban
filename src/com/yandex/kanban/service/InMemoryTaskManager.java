@@ -13,7 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, SimpleTask> packOfSimpleTasks = new HashMap<>();
     protected final HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
     protected final HashMap<Integer, SubTask> packOfSubtasks = new HashMap<>();
-    private final HistoryManager historyManager = (HistoryManager) Managers.getDefault();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
     
     @Override
     public ArrayList<SimpleTask> getPackOfSimpleTasks() {
@@ -145,7 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getHistory() {
+    public List<Task> history() {
         return historyManager.getHistory();
     }
 

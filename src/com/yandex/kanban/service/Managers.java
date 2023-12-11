@@ -2,7 +2,7 @@ package com.yandex.kanban.service;
 
 public final class Managers {
 
-    private static HistoryManager getDefaultHistory() {
+    public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }
 
