@@ -16,13 +16,11 @@ public class EpicTask extends Task {
 
     @Override
     public String toString() {
-        return "\n10" +
-                "EpicTask{" +
-                "subtaskIds=" + subtaskIds +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return "\n" +
+                "Эпическая задача №" + id +
+                ", в ней есть подзадачи " + subtaskIds +
+                ", имя = " + name +
+                ", описание = " + description +
+                ", статус = " + status;
     }
 }

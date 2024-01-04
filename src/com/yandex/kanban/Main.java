@@ -4,8 +4,7 @@ import com.yandex.kanban.model.EpicTask;
 import com.yandex.kanban.model.SimpleTask;
 import com.yandex.kanban.model.Status;
 import com.yandex.kanban.model.SubTask;
-import com.yandex.kanban.service.InMemoryHistoryManager;
-import com.yandex.kanban.service.InMemoryTaskManager;
+import com.yandex.kanban.service.*;
 
 
 import java.util.Scanner;
@@ -15,11 +14,13 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
-        SimpleTask simpleTask = new SimpleTask("Сходить в магазин", "Хлеб, молоко, сыр", Status.NEW);
-        EpicTask epicTask = new EpicTask("Приготовить пиццу", "С грибами и помидорами", Status.NEW);
-        SubTask subTask = new SubTask("Сходить в магазин", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW,epicTask);
-        SubTask subTaskTwo = new SubTask("тест", "тест", Status.NEW,epicTask);
-        SubTask subTaskThree = new SubTask("Сходить в кино", "Билеты", Status.NEW,epicTask);
+        SimpleTask simpleTask = new SimpleTask("Простая задача 1", "Хлеб, молоко, сыр", Status.NEW);
+        EpicTask epicTaskOne = new EpicTask("Эпическая задача 1", "С грибами и помидорами", Status.NEW);
+        EpicTask epicTaskTwo = new EpicTask("Эпическая задача 2", "С грибами и помидорами", Status.NEW);
+        SubTask subTaskOne = new SubTask("Подзадача 1", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, epicTaskOne);
+        SubTask subTaskTwo = new SubTask("Подзадача 2", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, epicTaskOne);
+        SubTask subTaskThree = new SubTask("Подзадача 3", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, epicTaskOne);
+
 
         while (true) {
             printMenu();
@@ -39,21 +40,24 @@ public class Main {
             } else if (command == 7) {
                 System.out.println(inMemoryTaskManager.getSimpleTaskById(1));
             } else if (command == 8) {
-                System.out.println(inMemoryTaskManager.getEpicTaskById(2));
+                System.out.println(inMemoryTaskManager.getEpicTaskById(1));
             } else if (command == 9) {
                 System.out.println(inMemoryTaskManager.getSubTaskById(3));
             } else if (command == 10) {
                 inMemoryTaskManager.createSimpleTask(simpleTask);
             } else if (command == 11) {
-                inMemoryTaskManager.createEpicTask(epicTask);
+                inMemoryTaskManager.createEpicTask(epicTaskOne);
+                inMemoryTaskManager.createEpicTask(epicTaskTwo);
             } else if (command == 12) {
-                inMemoryTaskManager.createSubTask(subTask);
+                inMemoryTaskManager.createSubTask(subTaskOne);
+                inMemoryTaskManager.createSubTask(subTaskTwo);
+                inMemoryTaskManager.createSubTask(subTaskThree);
             } else if (command == 13) {
                 inMemoryTaskManager.updateSimpleTask(simpleTask);
             } else if (command == 14) {
-                inMemoryTaskManager.updateEpicTask(epicTask);
+                inMemoryTaskManager.updateEpicTask(epicTaskOne);
             } else if (command == 15) {
-                inMemoryTaskManager.updateSubTask(subTask);
+                inMemoryTaskManager.updateSubTask(subTaskOne);
             } else if (command == 16) {
                 inMemoryTaskManager.deleteSimpleTaskById(1);
             } else if (command == 17) {
@@ -63,7 +67,7 @@ public class Main {
             } else if (command == 19) {
                 System.out.println(inMemoryTaskManager.getEpicSubtasks(1));
             } else if (command == 20) {
-                inMemoryHistoryManager.getHistory();
+                System.out.println(inMemoryTaskManager.getHistoryManager());
             } else if (command == 21) {
                 return;
             } else {

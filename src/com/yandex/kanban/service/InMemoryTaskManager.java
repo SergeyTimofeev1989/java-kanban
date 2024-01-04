@@ -14,7 +14,8 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
     protected final HashMap<Integer, SubTask> packOfSubtasks = new HashMap<>();
     private final HistoryManager historyManager = Managers.getDefaultHistory();
-    
+
+
     @Override
     public ArrayList<SimpleTask> getPackOfSimpleTasks() {
         return new ArrayList<>(packOfSimpleTasks.values());
@@ -118,12 +119,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSimpleTaskById(int idOfSimpleTask) {
         packOfSimpleTasks.remove(idOfSimpleTask);
+        historyManager.remove(idOfSimpleTask);
     }
 
     @Override
     public void deleteEpicTaskById(int idOfEpicTask) {
         packOfEpicTasks.get(idOfEpicTask).getSubtaskIds().clear();
         packOfEpicTasks.remove(idOfEpicTask);
+        historyManager.remove(idOfEpicTask);
     }
 
     @Override
@@ -132,6 +135,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicTask.getSubtaskIds().remove(idOfSubtask);
         packOfSubtasks.remove(idOfSubtask);
         changeStatus(epicTask);
+        historyManager.remove(idOfSubtask);
     }
 
     @Override
@@ -147,6 +151,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> history() {
         return historyManager.getHistory();
+    }
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
     }
 
     public void changeStatus(EpicTask task) {

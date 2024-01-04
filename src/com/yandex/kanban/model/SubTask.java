@@ -14,12 +14,11 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "\nSubTask{" +
-                "epicTask=" + epicTask +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return "\n" +
+                "Подзадача № " + id +
+                ", принадлежит к эпической задаче №" + epicTask.getId() +
+                ", имя = " + name +
+                ", описание = " + description +
+                ", статус = " + status;
     }
 }

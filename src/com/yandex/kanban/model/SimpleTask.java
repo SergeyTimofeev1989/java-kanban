@@ -7,11 +7,9 @@ public class SimpleTask extends Task {
 
     @Override
     public String toString() {
-        return "\nSimpleTask{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                '}';
+        return "\nПростая задача №" + id +
+                ", имя = " + name +
+                ", описание = " + description +
+                ", статус = " + status;
     }
 }
