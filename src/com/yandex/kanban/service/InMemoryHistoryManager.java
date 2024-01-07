@@ -5,22 +5,19 @@ import com.yandex.kanban.model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private List<Node<Task>> taskHistory = new LinkedList<>();
     private Map<Integer, Node<Task>> receivedTasks = new HashMap<>();
     private Node<Task> head;
     private Node<Task> tail;
 
 
     public void linkLast(Task task) {
-        final Node<Task> oldTail = tail;
-        final Node<Task> newNode = new Node<Task>(oldTail, task, null);
-        tail = newNode;
-        receivedTasks.put(task.getId(), newNode);
-        if (oldTail == null) {
+        final Node<Task> newNode = new Node<Task>(tail, task, null);
+        if (head == null) {
             head = newNode;
         } else {
-            oldTail.next = newNode;
+            tail.next = newNode;
         }
+        tail = newNode;
     }
 
     public List<Task> getTasks() {
@@ -33,9 +30,11 @@ public class InMemoryHistoryManager implements HistoryManager {
         return tasks;
     }
 
-    public void removeNode(Node<Task> node) {
-        if (!(node == null)) {
-            final Task data = node.item;
+    public void removeNode(Node<Task> id) {
+        Node<Task> node = receivedTasks.remove(id);
+        if (node == null) {
+            return;
+        } else {
             final Node<Task> next = node.next;
             final Node<Task> prev = node.prev;
             node.item = null;
@@ -62,9 +61,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task != null) {
             remove(task.getId());
             linkLast(task);
+            receivedTasks.put(task.getId(), newNode);
         }
     }
-
+    
     @Override
     public void remove(int id) {
         removeNode(receivedTasks.get(id));
@@ -72,7 +72,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-            return getTasks();
+        return getTasks();
     }
 }
 
