@@ -38,8 +38,8 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление списка всех простых задач
     @Override
     public void clearAllSimpleTasks() {
-        for(Map.Entry<Integer, SimpleTask> entry : packOfSimpleTasks.entrySet()) {
-            historyManager.getHistory().remove(entry);
+        for (Map.Entry<Integer, SimpleTask> entry : packOfSimpleTasks.entrySet()) {
+            historyManager.remove(entry.getValue().getId());
         }
         packOfSimpleTasks.clear();
     }
@@ -47,18 +47,27 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление списка всех эпических задач
     @Override
     public void clearAllEpicTasks() {
-        for(Map.Entry<Integer, EpicTask> entry : packOfEpicTasks.entrySet()) {
+        for (Map.Entry<Integer, EpicTask> entry : packOfEpicTasks.entrySet()) {
             historyManager.getHistory().remove(entry);
         }
+        for (Task task : packOfEpicTasks.values()) {
+            historyManager.remove(task.getId());
+        }
         packOfEpicTasks.clear();
+        for (Task task : packOfSubtasks.values()) {
+            historyManager.remove(task.getId());
+        }
         packOfSubtasks.clear();
     }
 
     // Удаление списка всех подзадач
     @Override
     public void clearAllSubTasks() {
-        for(Map.Entry<Integer,SubTask> entry : packOfSubtasks.entrySet()) {
+        for (Map.Entry<Integer, SubTask> entry : packOfSubtasks.entrySet()) {
             historyManager.getHistory().remove(entry);
+        }
+        for (Task task : packOfSubtasks.values()) {
+            historyManager.remove(task.getId());
         }
         packOfSubtasks.clear();
         for (EpicTask epic : packOfEpicTasks.values()) {
@@ -152,13 +161,15 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpicTaskById(int idOfEpicTask) {
         packOfEpicTasks.get(idOfEpicTask).getSubtaskIds().clear();
-        for(Map.Entry<Integer, SubTask> entry : packOfSubtasks.entrySet()) {
-            if (entry.getValue().getEpicTask().getId() == idOfEpicTask) {
-                entry.getValue().getEpicTask().getSubtaskIds().remove(idOfEpicTask);
-            }
+        EpicTask epic = packOfEpicTasks.remove(idOfEpicTask);
+        if (epic == null) {
+            return;
         }
-        packOfEpicTasks.remove(idOfEpicTask);
         historyManager.remove(idOfEpicTask);
+        for (Integer subtaskId : epic.getSubtaskIds()) {
+            packOfSubtasks.remove(subtaskId);
+            historyManager.remove(subtaskId);
+        }
     }
 
     // Удаление подзадачи по ID
