@@ -54,6 +54,6 @@ public interface TaskManager {
 
     List<SubTask> getEpicSubtasks(int epicId);
 
-    // Отображение последних просмотренных пользователем задач
     List<Task> getHistory();
+
 }

@@ -3,10 +3,11 @@ package com.yandex.kanban.model;
 import java.util.ArrayList;
 
 public class EpicTask extends Task {
-    private ArrayList<Integer> subtaskIds;
+    private final ArrayList<Integer> subtaskIds;
 
-    public EpicTask(String name, String description, Enum status) {
+    public EpicTask(String name, String description, Status status) {
         super(name, description, status);
+        typeOfTask = TypeOfTask.EPIC;
         subtaskIds = new ArrayList<>();
     }
 

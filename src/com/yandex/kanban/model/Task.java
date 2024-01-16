@@ -1,33 +1,51 @@
 package com.yandex.kanban.model;
 
-import java.util.ArrayList;
-
 public class Task {
     protected int id;
     protected String name;
     protected String description;
-    protected Enum status;
+    protected Status status;
+    protected TypeOfTask typeOfTask;
 
 
-    public Task(String name, String description, Enum status) {
+
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public void setStatus(Enum status) {
-        this.status = status;
-    }
-
-    public Enum getStatus() {
-        return status;
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public int getId() {
-        return id;
+    public String getName() {
+        return name;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public TypeOfTask getTypeOfTask() {
+        return typeOfTask;
+    }
+
+    public void setTypeOfTask(TypeOfTask typeOfTask) {
+        this.typeOfTask = typeOfTask;
     }
 }

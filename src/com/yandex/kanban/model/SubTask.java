@@ -1,10 +1,11 @@
 package com.yandex.kanban.model;
 
 public class SubTask extends Task {
-    private EpicTask epicTask;
+    private final EpicTask epicTask;
 
-    public SubTask(String name, String description, Enum status, EpicTask epicTask) {
+    public SubTask(String name, String description, Status status, EpicTask epicTask) {
         super(name, description, status);
+        typeOfTask = TypeOfTask.SUBTASK;
         this.epicTask = epicTask;
     }
 

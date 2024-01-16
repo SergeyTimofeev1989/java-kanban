@@ -5,10 +5,13 @@ import com.yandex.kanban.model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private Map<Integer, Node<Task>> receivedTasks = new HashMap<>();
+    private final Map<Integer, Node<Task>> receivedTasks;
     private Node<Task> head;
     private Node<Task> tail;
 
+    public InMemoryHistoryManager() {
+        this.receivedTasks = new HashMap<>();
+    }
 
     public void linkLast(Task task) {
         final Node<Task> newNode = new Node<Task>(tail, task, null);
@@ -42,10 +45,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (head == node && tail == node) {
             head = null;
             tail = null;
-        } else if (head == node && !(tail == node)) {
+        } else if (head == node && (tail != node)) {
             head = next;
             head.prev = null;
-        } else if (!(head == node) && tail == node) {
+        } else if ((head != node) && tail == node) {
             tail = prev;
             tail.next = null;
         } else {

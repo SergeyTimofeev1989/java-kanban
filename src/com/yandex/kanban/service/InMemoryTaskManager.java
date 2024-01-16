@@ -6,7 +6,6 @@ import com.yandex.kanban.model.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -14,7 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, SimpleTask> packOfSimpleTasks = new HashMap<>();
     protected final HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
     protected final HashMap<Integer, SubTask> packOfSubtasks = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
 
     // Получение списка всех простых задач
@@ -38,8 +37,8 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление списка всех простых задач
     @Override
     public void clearAllSimpleTasks() {
-        for (Map.Entry<Integer, SimpleTask> entry : packOfSimpleTasks.entrySet()) {
-            historyManager.remove(entry.getValue().getId());
+        for (SimpleTask value : packOfSimpleTasks.values()) {
+            historyManager.remove(value.getId());
         }
         packOfSimpleTasks.clear();
     }
@@ -47,9 +46,6 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление списка всех эпических задач
     @Override
     public void clearAllEpicTasks() {
-        for (Map.Entry<Integer, EpicTask> entry : packOfEpicTasks.entrySet()) {
-            historyManager.getHistory().remove(entry);
-        }
         for (Task task : packOfEpicTasks.values()) {
             historyManager.remove(task.getId());
         }
@@ -63,9 +59,6 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление списка всех подзадач
     @Override
     public void clearAllSubTasks() {
-        for (Map.Entry<Integer, SubTask> entry : packOfSubtasks.entrySet()) {
-            historyManager.getHistory().remove(entry);
-        }
         for (Task task : packOfSubtasks.values()) {
             historyManager.remove(task.getId());
         }
@@ -199,10 +192,6 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    // Должен возвращать последние 10 просмотренных задач. Просмотром будем считаться вызов у менеджера методов получения задачи по идентификатору
-    public HistoryManager getHistoryManager() {
-        return historyManager;
-    }
 
     public void changeStatus(EpicTask task) {
         int countOfNewStatus = 0;
