@@ -44,13 +44,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public void save() {
-        Map<Integer, Task> allTasks = new HashMap<>();
-        allTasks.putAll(packOfSimpleTasks);
-        allTasks.putAll(packOfEpicTasks);
-        allTasks.putAll(packOfSubtasks);
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path.toFile(), StandardCharsets.UTF_8), 512)) {
             bufferedWriter.write(HEADER);
-            for (Map.Entry<Integer, Task> entry : allTasks.entrySet()) {
+            for (Map.Entry<Integer, SimpleTask> entry : packOfSimpleTasks.entrySet()) {
+                bufferedWriter.write(toString(entry.getValue()));
+            }
+            for (Map.Entry<Integer, EpicTask> entry : packOfEpicTasks.entrySet()) {
+                bufferedWriter.write(toString(entry.getValue()));
+            }
+            for (Map.Entry<Integer, SubTask> entry : packOfSubtasks.entrySet()) {
                 bufferedWriter.write(toString(entry.getValue()));
             }
             bufferedWriter.write("\n" + historyToString(historyManager));
@@ -69,17 +71,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         Task taskForReturn = null;
         if (SUBTASK == type) {
             int idOfEpic = Integer.parseInt(arrayOfFields[5]);
-            taskForReturn = new SubTask(name, description, status, packOfEpicTasks.get(idOfEpic));
+            taskForReturn = new SubTask(id, name, description, status, type, packOfEpicTasks.get(idOfEpic));
             packOfEpicTasks.get(idOfEpic).getSubtaskIds().add(id);
         }
         if (TASK == type) {
-            taskForReturn = new SimpleTask(name, description, status);
+            taskForReturn = new SimpleTask(id, name, description, status, type);
         }
         if (EPIC == type) {
-            taskForReturn = new EpicTask(name, description, status);
+            taskForReturn = new EpicTask(id, name, description, status, type);
         }
-        taskForReturn.setId(id);
-        taskForReturn.setTypeOfTask(type);
         return taskForReturn;
     }
 
@@ -99,7 +99,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             while (bufferedReader.ready()) {
-                // Условие для пропуска первой строки "id,type,name,status,description,epic"
                 if (isFirstString) {
                     bufferedReader.readLine();
                     isFirstString = false;
@@ -140,20 +139,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return fileBackedTasksManager;
     }
 
-    @Override
-    public ArrayList<SimpleTask> getPackOfSimpleTasks() {
-        return super.getPackOfSimpleTasks();
-    }
-
-    @Override
-    public ArrayList<EpicTask> getPackOfEpicTasks() {
-        return super.getPackOfEpicTasks();
-    }
-
-    @Override
-    public ArrayList<SubTask> getPackOfSubTasks() {
-        return super.getPackOfSubTasks();
-    }
 
     @Override
     public void clearAllSimpleTasks() {

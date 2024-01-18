@@ -9,6 +9,11 @@ public class SubTask extends Task {
         this.epicTask = epicTask;
     }
 
+    public SubTask(int id, String name, String description, Status status, TypeOfTask typeOfTask, EpicTask epicTask) {
+        super(id, name, description, status, typeOfTask);
+        this.epicTask = epicTask;
+    }
+
     public EpicTask getEpicTask() {
         return epicTask;
     }
