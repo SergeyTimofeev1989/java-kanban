@@ -1,8 +1,11 @@
 package com.yandex.kanban.service;
 
 
+import com.sun.source.tree.LiteralTree;
 import com.yandex.kanban.model.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,6 +217,46 @@ public class InMemoryTaskManager implements TaskManager {
             task.setStatus(Status.DONE);
         } else {
             task.setStatus(Status.IN_PROGRESS);
+        }
+    }
+
+    public void changeStartTime(Task task, LocalDateTime startTime) {
+        if (task.getTypeOfTask() == TypeOfTask.EPIC) {
+            LocalDateTime time = LocalDateTime.of(9999, 9, 9, 9, 9);
+            for (SubTask subTask : packOfSubtasks.values()) {
+                if (subTask.getStartTime().isBefore(time)) {
+                    task.setStartTime(subTask.getStartTime());
+                }
+            }
+        } else {
+            task.setStartTime(startTime);
+        }
+    }
+
+    public void changeDuration(Task task, int duration) {
+        if (task.getTypeOfTask() == TypeOfTask.EPIC) {
+            Duration time = Duration.ofMinutes(0);
+            for (SubTask subTask : packOfSubtasks.values()) {
+                time.plus(subTask.getDuration());
+            }
+            task.setDuration(time);
+        } else {
+            task.setDuration(Duration.ofMinutes(duration));
+        }
+    }
+
+
+    public void changeEndTime(Task task, LocalDateTime endTime) {
+        if (task.getTypeOfTask() == TypeOfTask.EPIC) {
+            LocalDateTime time = LocalDateTime.now();
+            for (SubTask subtask : packOfSubtasks.values()) {
+                if (subtask.getStartTime().plusMinutes(subtask.getDuration().toMinutes()).isAfter(time)) {
+                    time = subtask.getStartTime().plusMinutes(subtask.getDuration().toMinutes());
+                }
+            }
+            task.setEndTime(time);
+        } else {
+            task.setEndTime(endTime);
         }
     }
 }

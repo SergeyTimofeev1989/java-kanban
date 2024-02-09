@@ -6,14 +6,19 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.yandex.kanban.model.TypeOfTask.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
+
     private final Path path;
     private static final String FILE_NAME = "tasks.txt";
-    public static final String HEADER = "id,type,name,status,description,epic\n";
+    public static final String HEADER = "id,type,name,status,description,duration,startTime,endTime,epic\n";
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
     public FileBackedTasksManager() {
         path = Paths.get("src/com/yandex/kanban/files/", FILE_NAME);
@@ -26,6 +31,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         stringBuilder.append(task.getName()).append(",");
         stringBuilder.append(task.getStatus()).append(",");
         stringBuilder.append(task.getDescription()).append(",");
+        stringBuilder.append(task.getDuration().toMinutes()).append(",");
+        stringBuilder.append(task.getStartTime().format(dateTimeFormatter)).append(",");
+        stringBuilder.append(task.getEndTime().format(dateTimeFormatter)).append(",");
         if (task.getTypeOfTask() == SUBTASK) {
             stringBuilder.append(((SubTask) task).getEpicTask().getId());
         }
@@ -62,23 +70,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public Task fromString(String value) {
-        String[] arrayOfFields = value.split(",");
+        String[] arrayOfFields = value.split(",(?!\\s)");
         int id = Integer.parseInt(arrayOfFields[0]);
         TypeOfTask type = TypeOfTask.valueOf(arrayOfFields[1]);
         String name = arrayOfFields[2];
         Status status = Status.valueOf(arrayOfFields[3]);
         String description = arrayOfFields[4];
+        Duration minutes = Duration.ofMinutes(Integer.parseInt(arrayOfFields[5]));
+        LocalDateTime timeToStart = LocalDateTime.parse(arrayOfFields[6], dateTimeFormatter);
+        LocalDateTime timeToEnd = LocalDateTime.parse(arrayOfFields[7], dateTimeFormatter);
         Task taskForReturn = null;
         if (SUBTASK == type) {
-            int idOfEpic = Integer.parseInt(arrayOfFields[5]);
-            taskForReturn = new SubTask(id, name, description, status, type, packOfEpicTasks.get(idOfEpic));
+            int idOfEpic = Integer.parseInt(arrayOfFields[8]);
+            taskForReturn = new SubTask(id, name, description, status, type, minutes, timeToStart, packOfEpicTasks.get(idOfEpic));
             packOfEpicTasks.get(idOfEpic).getSubtaskIds().add(id);
         }
         if (TASK == type) {
-            taskForReturn = new SimpleTask(id, name, description, status, type);
+            taskForReturn = new SimpleTask(id, name, description, status, type, minutes, timeToStart, timeToEnd);
         }
         if (EPIC == type) {
-            taskForReturn = new EpicTask(id, name, description, status, type);
+            taskForReturn = new EpicTask(id, name, description, status, type, minutes, timeToStart, timeToEnd);
         }
         return taskForReturn;
     }
@@ -250,9 +261,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public static void main(String[] args) {
-        SimpleTask simpleTask = new SimpleTask("Купить хлеб", "Бородинский с семенами; магазин работает до 19:00", Status.NEW);
-        EpicTask epicTask = new EpicTask("Тренировка", "16.01; подтягивания; ПШНБ; пресс", Status.NEW);
-        SubTask subTask = new SubTask("Пресс", "1) 8 минут на коврике; 2) подъем ног вися на турнике 4х12", Status.NEW, epicTask);
+        SimpleTask simpleTask = new SimpleTask("Купить хлеб", "Бородинский с семенами; магазин работает до 19:00", Status.NEW, Duration.ofMinutes(60), LocalDateTime.now());
+        EpicTask epicTask = new EpicTask("Тренировка", "16.01; подтягивания; ПШНБ; пресс", Status.NEW, Duration.ofMinutes(60), LocalDateTime.now());
+        SubTask subTask = new SubTask("Пресс", "1) 8 минут на коврике; 2) подъем ног вися на турнике 4х12", Status.NEW, Duration.ofMinutes(45), LocalDateTime.now(), epicTask);
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
         fileBackedTasksManager.createSimpleTask(simpleTask);
         fileBackedTasksManager.createEpicTask(epicTask);
