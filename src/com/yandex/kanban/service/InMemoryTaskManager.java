@@ -1,14 +1,11 @@
 package com.yandex.kanban.service;
 
 
-import com.sun.source.tree.LiteralTree;
 import com.yandex.kanban.model.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public class InMemoryTaskManager implements TaskManager {
@@ -109,6 +106,9 @@ public class InMemoryTaskManager implements TaskManager {
     public int createEpicTask(EpicTask epicTask) {
         epicTask.setId(id++);
         changeStatus(epicTask);
+        changeStartTime(epicTask);
+        changeDuration(epicTask);
+        changeEndTime(epicTask);
         packOfEpicTasks.put(epicTask.getId(), epicTask);
         return epicTask.getId();
     }
@@ -116,12 +116,19 @@ public class InMemoryTaskManager implements TaskManager {
     // Создание подзадачи
     @Override
     public int createSubTask(SubTask subTask) {
-        subTask.setId(id++);
-        packOfSubtasks.put(subTask.getId(), subTask);
-        subTask.getEpicTask().getSubtaskIds().add(subTask.getId());
-        changeStatus(subTask.getEpicTask());
+        if (packOfEpicTasks.containsValue(subTask.getEpicTask())) {
+            EpicTask epicTask = packOfEpicTasks.get(subTask.getEpicTask());
+            subTask.setId(id++);
+            packOfSubtasks.put(subTask.getId(), subTask);
+            subTask.getEpicTask().getSubtaskIds().add(subTask.getId());
+            changeStatus(subTask.getEpicTask());
+            changeStartTime(epicTask);
+            changeDuration(epicTask);
+            changeEndTime(epicTask);
+        }
         return subTask.getId();
     }
+
 
     // Обновление простой задачи
     @Override
@@ -132,9 +139,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Обновление эпической задачи
     @Override
-    public int updateEpicTask(EpicTask epicTack) {
-        packOfEpicTasks.put(epicTack.getId(), epicTack);
-        return epicTack.getId();
+    public int updateEpicTask(EpicTask epicTask) {
+        packOfEpicTasks.put(epicTask.getId(), epicTask);
+        return epicTask.getId();
     }
 
     // Обновление подзадачи
@@ -143,6 +150,9 @@ public class InMemoryTaskManager implements TaskManager {
         packOfSubtasks.put(subTask.getId(), subTask);
         EpicTask epicTask = packOfEpicTasks.get(subTask.getId());
         changeStatus(epicTask);
+        changeStartTime(epicTask);
+        changeDuration(epicTask);
+        changeEndTime(epicTask);
         return subTask.getId();
     }
 
@@ -175,6 +185,9 @@ public class InMemoryTaskManager implements TaskManager {
         epicTask.getSubtaskIds().remove(idOfSubtask);
         packOfSubtasks.remove(idOfSubtask);
         changeStatus(epicTask);
+        changeStartTime(epicTask);
+        changeDuration(epicTask);
+        changeEndTime(epicTask);
         historyManager.remove(idOfSubtask);
     }
 
@@ -220,43 +233,50 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public void changeStartTime(Task task, LocalDateTime startTime) {
-        if (task.getTypeOfTask() == TypeOfTask.EPIC) {
-            LocalDateTime time = LocalDateTime.of(9999, 9, 9, 9, 9);
-            for (SubTask subTask : packOfSubtasks.values()) {
-                if (subTask.getStartTime().isBefore(time)) {
-                    task.setStartTime(subTask.getStartTime());
-                }
+
+    public void changeStartTime(EpicTask task) {
+        if (packOfSubtasks != null && task != null && task.getSubtaskIds() != null) {
+            Optional<LocalDateTime> earliestStartTime = packOfSubtasks.entrySet()
+                    .stream()
+                    .filter(entry -> task.getSubtaskIds().contains(entry.getKey()))
+                    .map(entry -> entry.getValue().getStartTime())
+                    .min(LocalDateTime::compareTo);
+
+            if (earliestStartTime.isPresent()) {
+                task.setStartTime(earliestStartTime.get());
+            } else {
+                task.setStartTime(LocalDateTime.of(2050, 1, 1, 1, 1));
             }
         } else {
-            task.setStartTime(startTime);
+            task.setStartTime(LocalDateTime.now());
         }
     }
 
-    public void changeDuration(Task task, int duration) {
-        if (task.getTypeOfTask() == TypeOfTask.EPIC) {
-            Duration time = Duration.ofMinutes(0);
-            for (SubTask subTask : packOfSubtasks.values()) {
-                time.plus(subTask.getDuration());
-            }
-            task.setDuration(time);
+    public void changeDuration(EpicTask task) {
+        Optional<Duration> totalDuration = packOfSubtasks.entrySet()
+                .stream()
+                .filter(entry -> task.getSubtaskIds().contains(entry.getKey()))
+                .map(entry -> entry.getValue().getDuration())
+                .reduce((dt1, dt2) -> dt1.plusMinutes(dt2.toMinutes()));
+        if (totalDuration.isPresent()) {
+            task.setDuration(totalDuration.get());
         } else {
-            task.setDuration(Duration.ofMinutes(duration));
+            task.setDuration(Duration.ofMinutes(0));
         }
     }
 
 
-    public void changeEndTime(Task task, LocalDateTime endTime) {
-        if (task.getTypeOfTask() == TypeOfTask.EPIC) {
-            LocalDateTime time = LocalDateTime.now();
-            for (SubTask subtask : packOfSubtasks.values()) {
-                if (subtask.getStartTime().plusMinutes(subtask.getDuration().toMinutes()).isAfter(time)) {
-                    time = subtask.getStartTime().plusMinutes(subtask.getDuration().toMinutes());
-                }
-            }
-            task.setEndTime(time);
+    public void changeEndTime(EpicTask task) {
+        Optional<LocalDateTime> latestEndTime = packOfSubtasks.entrySet()
+                .stream()
+                .filter(entry -> task.getSubtaskIds().contains(entry.getKey()))
+                .map(entry -> entry.getValue().getStartTime().plus(entry.getValue().getDuration()))
+                .max(LocalDateTime::compareTo);
+
+        if (latestEndTime.isPresent()) {
+            task.setEndTime(latestEndTime.get());
         } else {
-            task.setEndTime(endTime);
+            task.setEndTime(LocalDateTime.of(2050, 1, 1, 1, 1));
         }
     }
 }
