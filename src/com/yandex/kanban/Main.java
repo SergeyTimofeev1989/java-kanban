@@ -3,8 +3,6 @@ package com.yandex.kanban;
 import com.yandex.kanban.model.*;
 import com.yandex.kanban.service.*;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
@@ -13,12 +11,12 @@ public class Main {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         InMemoryTaskManager fileBackedTasksManager1 = new InMemoryTaskManager();
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
-        SimpleTask simpleTask = new SimpleTask("Простая задача 1", "Хлеб, молоко, сыр", Status.NEW, Duration.ofMinutes(60), LocalDateTime.now());
+        SimpleTask simpleTask = new SimpleTask("Простая задача 1", "Хлеб, молоко, сыр", Status.NEW);
         EpicTask epicTaskOne = new EpicTask("Эпическая задача 1", "С грибами и помидорами", Status.NEW);
         EpicTask epicTaskTwo = new EpicTask("Эпическая задача 2", "С ананасами", Status.NEW);
-        SubTask subTaskOne = new SubTask("Подзадача 1", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, Duration.ofMinutes(10), LocalDateTime.now(), epicTaskOne);
-        SubTask subTaskTwo = new SubTask("Подзадача 2", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, Duration.ofMinutes(7), LocalDateTime.now(), epicTaskOne);
-        SubTask subTaskThree = new SubTask("Подзадача 3", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, Duration.ofMinutes(9), LocalDateTime.now(), epicTaskOne);
+        SubTask subTaskOne = new SubTask("Подзадача 1", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, epicTaskOne);
+        SubTask subTaskTwo = new SubTask("Подзадача 2", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, epicTaskOne);
+        SubTask subTaskThree = new SubTask("Подзадача 3", "Хлеб, молоко, сыр, грибы, мука, помидоры", Status.NEW, epicTaskOne);
 
 
         while (true) {

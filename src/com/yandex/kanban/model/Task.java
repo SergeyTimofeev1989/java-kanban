@@ -11,6 +11,19 @@ public class Task {
     protected TypeOfTask typeOfTask;
     protected Duration duration;
     protected LocalDateTime startTime;
+    protected LocalDateTime endTime;
+
+    public Task() {
+    }
+
+    public Task(int id, Status status) {
+        this.id = id;
+        this.status = status;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -34,6 +47,17 @@ public class Task {
         this.typeOfTask = typeOfTask;
         this.duration = duration;
         this.startTime = startTime;
+    }
+
+    public Task(int id, String name, String description, Status status) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
+    public Task(String name, String description, Status status, TypeOfTask typeOfTask, Duration duration, LocalDateTime startTime) {
+        this.endTime = startTime.plus(duration);
     }
 
     public int getId() {
@@ -66,26 +90,27 @@ public class Task {
         return typeOfTask;
     }
 
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-
-    public void setDuration(Duration duration) {
-        this.duration = duration;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+    public void setTypeOfTask(TypeOfTask typeOfTask) {
+        this.typeOfTask = typeOfTask;
     }
 
     public LocalDateTime getEndTime() {
         return startTime.plus(duration);
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 }

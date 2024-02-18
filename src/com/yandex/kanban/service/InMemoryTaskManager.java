@@ -14,6 +14,11 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, EpicTask> packOfEpicTasks = new HashMap<>();
     protected final HashMap<Integer, SubTask> packOfSubtasks = new HashMap<>();
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final TreeSet<Task> tasks;
+
+    public InMemoryTaskManager() {
+        tasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
+    }
 
 
     // Получение списка всех простых задач
@@ -97,7 +102,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int createSimpleTask(SimpleTask simpleTask) {
         simpleTask.setId(id++);
-        packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
+        if (isTimeNotOverlap(simpleTask)) {
+            addTask(simpleTask);
+            packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
+        } else {
+            System.out.println("Время пересекается, операция прервана");
+        }
         return simpleTask.getId();
     }
 
@@ -116,43 +126,52 @@ public class InMemoryTaskManager implements TaskManager {
     // Создание подзадачи
     @Override
     public int createSubTask(SubTask subTask) {
-        if (packOfEpicTasks.containsValue(subTask.getEpicTask())) {
-            EpicTask epicTask = packOfEpicTasks.get(subTask.getEpicTask());
-            subTask.setId(id++);
+        subTask.setId(id++);
+        if (isTimeNotOverlap(subTask)) {
+            addTask(subTask);
             packOfSubtasks.put(subTask.getId(), subTask);
+            packOfEpicTasks.put(subTask.getEpicTask().getId(), subTask.getEpicTask());
             subTask.getEpicTask().getSubtaskIds().add(subTask.getId());
             changeStatus(subTask.getEpicTask());
-            changeStartTime(epicTask);
-            changeDuration(epicTask);
-            changeEndTime(epicTask);
+            changeStartTime(subTask.getEpicTask());
+            changeDuration(subTask.getEpicTask());
+            changeEndTime(subTask.getEpicTask());
+        } else {
+            System.out.println("Время пересекается, операция прервана");
         }
         return subTask.getId();
     }
 
-
     // Обновление простой задачи
     @Override
     public int updateSimpleTask(SimpleTask simpleTask) {
-        packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
+        if (isTimeNotOverlap(simpleTask)) {
+            addTask(simpleTask);
+            packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
+        } else {
+            System.out.println("Время пересекается, операция прервана");
+        }
         return simpleTask.getId();
     }
 
     // Обновление эпической задачи
     @Override
-    public int updateEpicTask(EpicTask epicTask) {
-        packOfEpicTasks.put(epicTask.getId(), epicTask);
-        return epicTask.getId();
+    public int updateEpicTask(EpicTask epicTack) {
+        packOfEpicTasks.put(epicTack.getId(), epicTack);
+        return epicTack.getId();
     }
 
     // Обновление подзадачи
     @Override
     public int updateSubTask(SubTask subTask) {
-        packOfSubtasks.put(subTask.getId(), subTask);
-        EpicTask epicTask = packOfEpicTasks.get(subTask.getId());
-        changeStatus(epicTask);
-        changeStartTime(epicTask);
-        changeDuration(epicTask);
-        changeEndTime(epicTask);
+        if (isTimeNotOverlap(subTask)) {
+            addTask(subTask);
+            packOfSubtasks.put(subTask.getId(), subTask);
+            EpicTask epicTask = packOfEpicTasks.get(subTask.getId());
+            changeStatus(epicTask);
+        } else {
+            System.out.println("Время пересекается, операция прервана");
+        }
         return subTask.getId();
     }
 
@@ -233,51 +252,49 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    protected void changeStartTime(EpicTask task) {
+        Optional<LocalDateTime> minStartTime = packOfSubtasks.values().stream()
+                .filter(subTask -> task.getSubtaskIds().contains(subTask.getId()))
+                .map(SubTask::getStartTime)
+                .min(Comparator.nullsLast(Comparator.naturalOrder()));
+        LocalDateTime time = minStartTime.orElse(null);
 
-    public void changeStartTime(EpicTask task) {
-        if (packOfSubtasks != null && task != null && task.getSubtaskIds() != null) {
-            Optional<LocalDateTime> earliestStartTime = packOfSubtasks.entrySet()
-                    .stream()
-                    .filter(entry -> task.getSubtaskIds().contains(entry.getKey()))
-                    .map(entry -> entry.getValue().getStartTime())
-                    .min(LocalDateTime::compareTo);
-
-            if (earliestStartTime.isPresent()) {
-                task.setStartTime(earliestStartTime.get());
-            } else {
-                task.setStartTime(LocalDateTime.of(2050, 1, 1, 1, 1));
-            }
-        } else {
-            task.setStartTime(LocalDateTime.now());
-        }
+        task.setStartTime(time);
     }
 
-    public void changeDuration(EpicTask task) {
-        Optional<Duration> totalDuration = packOfSubtasks.entrySet()
-                .stream()
-                .filter(entry -> task.getSubtaskIds().contains(entry.getKey()))
-                .map(entry -> entry.getValue().getDuration())
-                .reduce((dt1, dt2) -> dt1.plusMinutes(dt2.toMinutes()));
-        if (totalDuration.isPresent()) {
-            task.setDuration(totalDuration.get());
-        } else {
-            task.setDuration(Duration.ofMinutes(0));
-        }
+    protected void changeDuration(EpicTask task) {
+        long minutes = packOfSubtasks.values().stream()
+                .filter(subTask -> task.getSubtaskIds().contains(subTask.getId()))
+                .mapToLong(subTask -> subTask.getDuration().toMinutes())
+                .sum();
+
+        task.setDuration(Duration.ofMinutes(minutes));
     }
 
-
-    public void changeEndTime(EpicTask task) {
-        Optional<LocalDateTime> latestEndTime = packOfSubtasks.entrySet()
-                .stream()
-                .filter(entry -> task.getSubtaskIds().contains(entry.getKey()))
-                .map(entry -> entry.getValue().getStartTime().plus(entry.getValue().getDuration()))
+    public void changeEndTime(EpicTask epicTask) {
+        Optional<LocalDateTime> latestEndTime = epicTask.getSubtaskIds().stream()
+                .map(packOfSubtasks::get)
+                .map(SubTask::getEndTime)
+                .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo);
 
-        if (latestEndTime.isPresent()) {
-            task.setEndTime(latestEndTime.get());
-        } else {
-            task.setEndTime(LocalDateTime.of(2050, 1, 1, 1, 1));
-        }
+        latestEndTime.ifPresent(epicTask::setEndTime);
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        tasks.addAll(packOfSimpleTasks.values());
+        tasks.addAll(packOfSubtasks.values());
+        return new ArrayList<>(tasks);
+    }
+
+    public boolean isTimeNotOverlap(Task task) {
+        return getPrioritizedTasks().stream()
+                .filter(element -> element.getStartTime() != null && element.getDuration() != null)
+                .noneMatch(element -> task.getStartTime().isBefore(element.getEndTime()) && task.getEndTime().isAfter(element.getStartTime()));
     }
 }
 

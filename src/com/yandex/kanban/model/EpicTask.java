@@ -1,49 +1,59 @@
-package com.yandex.kanban.model;
+    package com.yandex.kanban.model;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+    import java.time.Duration;
+    import java.time.LocalDateTime;
+    import java.util.ArrayList;
 
-import static com.yandex.kanban.service.FileBackedTasksManager.dateTimeFormatter;
 
-public class EpicTask extends Task {
-    private List<SubTask> subTasks;
-    private final ArrayList<Integer> subtaskIds;
-    private LocalDateTime endTime;
 
-    public EpicTask(String name, String description, Status status) {
-        super(name, description, status);
-        this.typeOfTask = TypeOfTask.EPIC;
-        this.subtaskIds = new ArrayList<>();
+    public class EpicTask extends Task {
+        private final ArrayList<Integer> subtaskIds;
+
+        public EpicTask() {
+            this.subtaskIds = new ArrayList<>();
+        }
+
+        public EpicTask(String name, String description, Status status) {
+            super(name, description, status);
+            typeOfTask = TypeOfTask.EPIC;
+            subtaskIds = new ArrayList<>();
+        }
+
+
+        public EpicTask(int id, String name, String description, Status status, TypeOfTask typeOfTask) {
+            super(id, name, description, status);
+            this.typeOfTask = TypeOfTask.EPIC;
+            subtaskIds = new ArrayList<>();
+        }
+
+
+        public EpicTask(int id, String name, String description, Status status, TypeOfTask typeOfTask, Duration duration, LocalDateTime startTime) {
+            super(id, name, description, status, typeOfTask, duration, startTime);
+            subtaskIds = new ArrayList<>();
+        }
+
+        public ArrayList<Integer> getSubtaskIds() {
+            return subtaskIds;
+        }
+
+
+        @Override
+        public String toString() {
+            String startTimeString = startTime != null ? startTime.toString() : "не определено";
+            String endTimeString = endTime != null ? endTime.toString() : "не определен";
+            String durationString = duration != null ? String.valueOf(duration.toMinutes()) : "не определено";
+            return "Эпическая задача №" + id +
+                    ", имя = " + name +
+                    ", описание = " + description +
+                    ", статус = " + status +
+                    ", продолжительность " + durationString +
+                    " мин, начало в " + startTimeString +
+                    ", конец в " + endTimeString +
+                    ", содержит подзадачи - " + subtaskIds;
+        }
+
+        @Override
+        public LocalDateTime getEndTime() {
+            return this.endTime;
+        }
     }
-
-    public EpicTask(String name, String description, Status status, Duration duration, LocalDateTime startTime) {
-        super(name, description, status, duration, startTime);
-        this.typeOfTask = TypeOfTask.EPIC;
-        this.subtaskIds = new ArrayList<>();
-    }
-
-
-    public ArrayList<Integer> getSubtaskIds() {
-        return subtaskIds;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-
-
-    @Override
-    public String toString() {
-        return "Эпическая задача №" + id +
-                ", имя = " + name +
-                ", описание " + description +
-                ", статус = " + status +
-                ", продолжительность " + duration.toMinutes() +
-                " мин, время начала " + startTime.format(dateTimeFormatter) +
-                ", время окончания " + endTime +
-                ", содержит подзадачи - " + getSubtaskIds();
-    }
-}

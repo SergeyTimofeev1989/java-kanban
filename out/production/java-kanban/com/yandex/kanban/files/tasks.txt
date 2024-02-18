@@ -1,4 +1,4 @@
 id,type,name,status,description,duration,startTime,endTime,epic
-1,TASK,Купить хлеб,NEW,Бородинский с семенами; магазин работает до 19:00,60,11.02.24 11:09,11.02.24 12:09,
-2,EPIC,Тренировка,NEW,16 января; подтягивания; ПШНБ; пресс,0,01.01.50 01:01,01.01.50 01:01,
+1,EPIC,name,NEW,description,null,null.null,
 
+1
