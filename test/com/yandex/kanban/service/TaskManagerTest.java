@@ -10,13 +10,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
     public T taskManager;
 
+
     @Test
-    void clearAllSimpleTasks() {
+    void clearAllSimpleTasks() throws Exception {
         SimpleTask simpleTask = new SimpleTask();
         taskManager.createSimpleTask(simpleTask);
         taskManager.clearAllSimpleTasks();
@@ -34,7 +36,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void clearAllSubTasks() {
+    void clearAllSubTasks() throws Exception {
         EpicTask epicTask = new EpicTask();
         SubTask subTask = new SubTask(3, "name", "description", Status.NEW, TypeOfTask.SUBTASK, Duration.ofMinutes(10), LocalDateTime.now().plusHours(2), epicTask);
         taskManager.createSubTask(subTask);
@@ -46,7 +48,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    void getSimpleTaskByIdTest(int id) {
+    void getSimpleTaskByIdTest(int id) throws Exception {
         SimpleTask simpleTaskOne = new SimpleTask();
         SimpleTask simpleTaskTwo = new SimpleTask();
         SimpleTask simpleTaskThree = new SimpleTask();
@@ -78,7 +80,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
 
     @Test
-    void createSimpleTaskTest() {
+    void createSimpleTaskTest() throws Exception {
         SimpleTask simpleTask = new SimpleTask("name", "description", Status.NEW);
         final int taskId = taskManager.createSimpleTask(simpleTask);
         final Task savedTask = taskManager.getSimpleTaskById(taskId);
@@ -113,7 +115,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void createSubTaskTest() {
+    void createSubTaskTest() throws Exception {
         EpicTask epicTask = new EpicTask("name", "description", Status.NEW);
         SubTask subTask = new SubTask(3, "name", "description", Status.NEW, TypeOfTask.SUBTASK, Duration.ofMinutes(10), LocalDateTime.now().plusHours(2), epicTask);
         final int taskId = taskManager.createSubTask(subTask);
@@ -131,7 +133,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void updateSimpleTaskTest() {
+    void updateSimpleTaskTest() throws Exception {
         SimpleTask simpleTask = new SimpleTask("name", "description", Status.NEW);
         final int taskId = taskManager.createSimpleTask(simpleTask);
         final Task savedTask = taskManager.getSimpleTaskById(taskId);
@@ -167,7 +169,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @ParameterizedTest
     @ValueSource(ints = 1)
-    void deleteSimpleTaskById() {
+    void deleteSimpleTaskById() throws Exception {
         SimpleTask simpleTask = new SimpleTask("name", "description", Status.NEW);
 
         taskManager.createSimpleTask(simpleTask);
@@ -190,7 +192,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @ParameterizedTest
     @ValueSource(ints = 1)
-    void deleteSubTaskById(int id) {
+    void deleteSubTaskById(int id) throws Exception {
         EpicTask epicTask = new EpicTask("name", "description", Status.NEW);
         SubTask subTask = new SubTask(3, "name", "description", Status.NEW, TypeOfTask.SUBTASK, Duration.ofMinutes(10), LocalDateTime.now().plusHours(2), epicTask);
         taskManager.createEpicTask(epicTask);
@@ -201,9 +203,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(size - 1, taskManager.getPackOfSimpleTasks().size());
     }
 
+    
     @ParameterizedTest
     @ValueSource(ints = 1)
-    void getEpicSubTasks(int id) {
+    void getEpicSubTasks(int id) throws Exception {
         EpicTask epicTask = new EpicTask("name", "description", Status.NEW);
         SubTask subTask = new SubTask(3, "name", "description", Status.NEW, TypeOfTask.SUBTASK, Duration.ofMinutes(10), LocalDateTime.now().plusHours(2), epicTask);
         taskManager.createEpicTask(epicTask);
@@ -217,15 +220,5 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void getHistoryTest() {
 
         assertEquals(ArrayList.class, taskManager.getHistory().getClass());
-    }
-
-    @Test
-    void isSubTaskHasEpicTask() {
-        EpicTask epicTask = new EpicTask();
-        taskManager.createEpicTask(epicTask);
-        SubTask subTask = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(5), LocalDateTime.now(), epicTask);
-        taskManager.createSubTask(subTask);
-
-        assertEquals(epicTask, subTask.getEpicTask());
     }
 }

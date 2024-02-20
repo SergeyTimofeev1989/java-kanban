@@ -158,10 +158,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 if (task.getTypeOfTask() == SUBTASK) {
                     SubTask subTask = (SubTask) task;
                     fileBackedTasksManager.packOfSubtasks.put(subTask.getId(), subTask);
+                    fileBackedTasksManager.getPrioritizedTasks();
                 }
                 if (task.getTypeOfTask() == TASK) {
                     SimpleTask simpleTask = (SimpleTask) task;
                     fileBackedTasksManager.packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
+                    fileBackedTasksManager.getPrioritizedTasks();
                 }
 
             }
@@ -212,7 +214,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     @Override
-    public int createSimpleTask(SimpleTask simpleTask) {
+    public int createSimpleTask(SimpleTask simpleTask) throws Exception {
         int id = super.createSimpleTask(simpleTask);
         save();
         return id;
@@ -226,14 +228,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     @Override
-    public int createSubTask(SubTask subTask) {
+    public int createSubTask(SubTask subTask) throws Exception {
         int id = super.createSubTask(subTask);
         save();
         return id;
     }
 
     @Override
-    public int updateSimpleTask(SimpleTask simpleTask) {
+    public int updateSimpleTask(SimpleTask simpleTask) throws Exception {
         int id = super.updateSimpleTask(simpleTask);
         save();
         return id;
@@ -247,7 +249,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     @Override
-    public int updateSubTask(SubTask subTask) {
+    public int updateSubTask(SubTask subTask) throws Exception {
         int id = super.updateSubTask(subTask);
         save();
         return id;
@@ -281,18 +283,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return super.getHistory();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SimpleTask simpleTask = new SimpleTask("Простая задача", "описание простой задачи", Status.NEW, Duration.ofMinutes(5), LocalDateTime.of(2024, 2, 13, 12, 0));
         EpicTask epicTask = new EpicTask("Эпическая задача", "описание эпика", Status.NEW);
         SubTask subTask = new SubTask("Подзадача эпика 3", "описание подзадачи", Status.NEW, Duration.ofMinutes(5), LocalDateTime.of(2024, 2, 13, 10, 0), epicTask);
         SubTask subTaskTwo = new SubTask("Подзадача эпика 4", "ПШНБ 40кг 4х8", Status.NEW, Duration.ofMinutes(5), LocalDateTime.of(2024, 2, 13, 11, 0), epicTask);
         SubTask subTaskThree = new SubTask("Подзадача эпика 5", "Задача не должна быть создана из за пересечения", Status.NEW, Duration.ofMinutes(5), LocalDateTime.of(2024, 2, 13, 11, 0), epicTask);
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
-        fileBackedTasksManager.createSimpleTask(simpleTask);
-        fileBackedTasksManager.createEpicTask(epicTask);
-        fileBackedTasksManager.createSubTask(subTask);
-        fileBackedTasksManager.createSubTask(subTaskTwo);
-        fileBackedTasksManager.createSubTask(subTaskThree);
+        try {
+            fileBackedTasksManager.createSimpleTask(simpleTask);
+            fileBackedTasksManager.createEpicTask(epicTask);
+            fileBackedTasksManager.createSubTask(subTask);
+            fileBackedTasksManager.createSubTask(subTaskTwo);
+            fileBackedTasksManager.createSubTask(subTaskThree);
+        } catch (Exception e) {
+            System.out.println("Ошибка при создании задачи: " + e.getMessage());
+        }
 
         fileBackedTasksManager.getSimpleTaskById(1);
         fileBackedTasksManager.getEpicTaskById(2);
@@ -316,7 +322,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
         System.out.println();
 
-        for (Task prioritizedTask : newFileBackedTasksManager.getPrioritizedTasks()) {
+
+        for (Task prioritizedTask : fileBackedTasksManager.getPrioritizedTasks()) {
             System.out.println(prioritizedTask.getName() + " " + prioritizedTask.getStartTime());
         }
     }

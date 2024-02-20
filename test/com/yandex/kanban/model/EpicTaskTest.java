@@ -28,7 +28,7 @@ class EpicTaskTest {
     }
 
     @Test
-    void allSubTasksWithStatusNewShouldSetNewStatus() {
+    void allSubTasksWithStatusNewShouldSetNewStatus() throws Exception {
         SubTask subTaskOne = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(1), LocalDateTime.now(), epicTask);
         SubTask subTaskTwo = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(1), LocalDateTime.now().plusMinutes(5), epicTask);
         SubTask subTaskThree = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(1), LocalDateTime.now().plusMinutes(10), epicTask);
@@ -41,7 +41,7 @@ class EpicTaskTest {
     }
 
     @Test
-    void allSubTasksWithStatusDoneShouldSetDoneStatus() {
+    void allSubTasksWithStatusDoneShouldSetDoneStatus() throws Exception {
         SubTask subTaskOne = new SubTask("name", "description", Status.DONE, Duration.ofMinutes(1), LocalDateTime.now(), epicTask);
         SubTask subTaskTwo = new SubTask("name", "description", Status.DONE, Duration.ofMinutes(1), LocalDateTime.now().plusMinutes(5), epicTask);
         SubTask subTaskThree = new SubTask("name", "description", Status.DONE, Duration.ofMinutes(1), LocalDateTime.now().plusMinutes(15), epicTask);
@@ -54,7 +54,7 @@ class EpicTaskTest {
     }
 
     @Test
-    void subTaskWithStatusNewAndSubTaskWithStatusDoneShouldSetInProgressStatus() {
+    void subTaskWithStatusNewAndSubTaskWithStatusDoneShouldSetInProgressStatus() throws Exception {
         SubTask subTaskOne = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(1), LocalDateTime.now(), epicTask);
         SubTask subTaskTwo = new SubTask("name", "description", Status.DONE, Duration.ofMinutes(1), LocalDateTime.now().plusMinutes(15), epicTask);
 
@@ -65,7 +65,7 @@ class EpicTaskTest {
     }
 
     @Test
-    void subTasksWithStatusInProgressShouldSetInProgressStatus() {
+    void subTasksWithStatusInProgressShouldSetInProgressStatus() throws Exception {
         SubTask subTaskOne = new SubTask("name", "description", Status.IN_PROGRESS, Duration.ofMinutes(1), LocalDateTime.now(), epicTask);
         SubTask subTaskTwo = new SubTask("name", "description", Status.IN_PROGRESS, Duration.ofMinutes(1), LocalDateTime.now().plusMinutes(15), epicTask);
 

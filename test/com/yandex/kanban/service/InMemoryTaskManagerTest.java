@@ -26,7 +26,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     }
 
     @Test
-    void changeStatusWhenAllSubtasksNEW() {
+    void changeStatusWhenAllSubtasksNEW() throws Exception {
         EpicTask epicTask = new EpicTask();
 
         SubTask subTaskOne = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(10), LocalDateTime.now(), epicTask);
@@ -39,7 +39,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     }
 
     @Test
-    void changeStatusWhenAllSubtasksDONE() {
+    void changeStatusWhenAllSubtasksDONE() throws Exception {
         EpicTask epicTask = new EpicTask();
 
         SubTask subTaskOne = new SubTask("name", "description", Status.DONE, Duration.ofMinutes(10), LocalDateTime.now(), epicTask);
@@ -52,7 +52,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     }
 
     @Test
-    void changeStatusWithNEWandDONE() {
+    void changeStatusWithNEWandDONE() throws Exception {
         EpicTask epicTask = new EpicTask();
 
         SubTask subTaskOne = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(10), LocalDateTime.now(), epicTask);
@@ -65,7 +65,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     }
 
     @Test
-    void changeStatusWhenAllSubtasksINPROGRESS() {
+    void changeStatusWhenAllSubtasksINPROGRESS() throws Exception {
         EpicTask epicTask = new EpicTask();
 
         SubTask subTaskOne = new SubTask("name", "description", Status.NEW, Duration.ofMinutes(10), LocalDateTime.now(), epicTask);

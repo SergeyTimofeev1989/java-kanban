@@ -31,18 +31,18 @@ public interface TaskManager {
     SubTask getSubTaskById(int id);
 
 
-    int createSimpleTask(SimpleTask simpleTask);
+    int createSimpleTask(SimpleTask simpleTask) throws Exception;
 
     int createEpicTask(EpicTask epicTask);
 
-    int createSubTask(SubTask subTask);
+    int createSubTask(SubTask subTask) throws Exception;
 
 
-    int updateSimpleTask(SimpleTask simpleTask);
+    int updateSimpleTask(SimpleTask simpleTask) throws Exception;
 
     int updateEpicTask(EpicTask epicTack);
 
-    int updateSubTask(SubTask subTask);
+    int updateSubTask(SubTask subTask) throws Exception;
 
 
     void deleteSimpleTaskById(int idOfSimpleTask);

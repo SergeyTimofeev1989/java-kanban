@@ -6,7 +6,7 @@ import com.yandex.kanban.service.*;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         InMemoryTaskManager fileBackedTasksManager1 = new InMemoryTaskManager();

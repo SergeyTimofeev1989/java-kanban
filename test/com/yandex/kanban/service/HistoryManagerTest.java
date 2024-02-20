@@ -1,12 +1,9 @@
 package com.yandex.kanban.service;
 
-import com.yandex.kanban.model.*;
+import com.yandex.kanban.model.SimpleTask;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HistoryManagerTest {
     InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
@@ -14,7 +11,7 @@ class HistoryManagerTest {
 
 
     @Test
-    void checkEmptyHistory() {
+    void checkEmptyHistory() throws Exception {
         SimpleTask simpleTask = new SimpleTask();
         taskManager.createSimpleTask(simpleTask);
         historyManager.add(simpleTask);
@@ -23,7 +20,7 @@ class HistoryManagerTest {
     }
 
     @Test
-    void checkDoubleInHistory() {
+    void checkDoubleInHistory() throws Exception {
         SimpleTask simpleTask = new SimpleTask();
         taskManager.createSimpleTask(simpleTask);
         taskManager.getSimpleTaskById(1);
