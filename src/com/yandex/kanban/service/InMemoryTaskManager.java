@@ -42,8 +42,9 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление списка всех простых задач
     @Override
     public void clearAllSimpleTasks() {
-        for (SimpleTask value : packOfSimpleTasks.values()) {
-            historyManager.remove(value.getId());
+        for (SimpleTask simpleTask : packOfSimpleTasks.values()) {
+            historyManager.remove(simpleTask.getId());
+            prioritizedTasks.remove(simpleTask);
         }
         packOfSimpleTasks.clear();
     }
@@ -64,8 +65,9 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление списка всех подзадач
     @Override
     public void clearAllSubTasks() {
-        for (Task task : packOfSubtasks.values()) {
-            historyManager.remove(task.getId());
+        for (SubTask subTask : packOfSubtasks.values()) {
+            historyManager.remove(subTask.getId());
+            prioritizedTasks.remove(subTask);
         }
         packOfSubtasks.clear();
         for (EpicTask epic : packOfEpicTasks.values()) {
@@ -141,6 +143,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int updateSimpleTask(SimpleTask simpleTask) throws Exception {
         if (isTimeNotOverlap(simpleTask)) {
+            prioritizedTasks.remove(simpleTask);
             addTask(simpleTask);
             packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
         } else {
@@ -160,10 +163,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int updateSubTask(SubTask subTask) throws Exception {
         if (isTimeNotOverlap(subTask)) {
+            prioritizedTasks.remove(subTask);
             addTask(subTask);
             packOfSubtasks.put(subTask.getId(), subTask);
             EpicTask epicTask = packOfEpicTasks.get(subTask.getId());
             changeStatus(epicTask);
+            updateTaskTimes(epicTask);
         } else {
             throw new Exception("Время пересекается, операция прервана");
         }
@@ -173,7 +178,8 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление простой задачи по ID
     @Override
     public void deleteSimpleTaskById(int idOfSimpleTask) {
-        packOfSimpleTasks.remove(idOfSimpleTask);
+        SimpleTask simpleTask = packOfSimpleTasks.remove(idOfSimpleTask);
+        prioritizedTasks.remove(simpleTask);
         historyManager.remove(idOfSimpleTask);
     }
 
@@ -197,7 +203,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubTaskById(int idOfSubtask) {
         EpicTask epicTask = packOfSubtasks.get(idOfSubtask).getEpicTask();
         epicTask.getSubtaskIds().remove(idOfSubtask);
-        packOfSubtasks.remove(idOfSubtask);
+        SubTask subTask = packOfSubtasks.remove(idOfSubtask);
+        prioritizedTasks.remove(subTask);
         changeStatus(epicTask);
         updateTaskTimes(epicTask);
         historyManager.remove(idOfSubtask);

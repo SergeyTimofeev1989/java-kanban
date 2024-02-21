@@ -165,7 +165,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     fileBackedTasksManager.packOfSimpleTasks.put(simpleTask.getId(), simpleTask);
                     fileBackedTasksManager.getPrioritizedTasks();
                 }
-
             }
         } catch (IOException e) {
             throw new RuntimeException("Не получилось загрузить информацию из файла", e);
@@ -305,6 +304,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         fileBackedTasksManager.getSubTaskById(3);
         fileBackedTasksManager.getSubTaskById(3);
         fileBackedTasksManager.getSimpleTaskById(1);
+        fileBackedTasksManager.deleteSimpleTaskById(1);
 
         FileBackedTasksManager newFileBackedTasksManager = loadFromFile(fileBackedTasksManager.path.toFile());
         Map<Integer, Task> allMaps = new HashMap<>();

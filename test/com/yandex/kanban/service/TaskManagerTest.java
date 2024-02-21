@@ -203,7 +203,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(size - 1, taskManager.getPackOfSimpleTasks().size());
     }
 
-    
+
     @ParameterizedTest
     @ValueSource(ints = 1)
     void getEpicSubTasks(int id) throws Exception {

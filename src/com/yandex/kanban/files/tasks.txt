@@ -1,4 +1,6 @@
 id,type,name,status,description,duration,startTime,endTime,epic
-1,EPIC,name,NEW,description,null,null.null,
+2,EPIC,Эпическая задача,NEW,описание эпика,10,2024-02-13T10:00,2024-02-13T11:05,
+3,SUBTASK,Подзадача эпика 3,NEW,описание подзадачи,5,2024-02-13T10:00,2024-02-13T10:05,2
+4,SUBTASK,Подзадача эпика 4,NEW,ПШНБ 40кг 4х8,5,2024-02-13T11:00,2024-02-13T11:05,2
 
-1
+1,2,3
